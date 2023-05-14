@@ -1,0 +1,43 @@
+import urllib.parse
+import requests
+
+main_api = "https://www.mapquestapi.com/directions/v2/route?"
+key = "2Ng4D3McgE3oBlfd7h6dDTBPYZ3Ti167"
+
+while True:
+   Inicio = input("Ingresar su ubicacion de comienzo: ")
+   if Inicio == "salir" or Inicio == "s":
+       break
+   Termino = input("Ingresar su ubicacion de destino: ")
+   if Termino == "salir" or Termino == "s":
+        break
+
+   url = main_api + urllib.parse.urlencode({"key" :key, "from" :Inicio, "to" : Termino}) + "&unit=k&locale=es_MX"
+   print("URL: " + (url))
+
+   json_data = requests.get(url).json()
+   json_status = json_data ["info"] ["statuscode"]
+
+   if json_status == 0:
+       print("El estado de la API: " + str(json_status) + "=  Llamada de ruta exitosa.\n")
+       print("**")
+       print("Como llegar desde " + (Inicio) + " a " + (Termino))
+       print("El viaje dura:   " + (json_data["route"]["formattedTime"]))
+       print("Kilometros: " + str("{:.2f}".format((json_data["route"]["distance"])1.61)))
+       print("**")
+       for each in json_data["route"]["legs"][0]["maneuvers"]:
+           print((each["narrative"]) + " (" + str("{:.2f}".format((each["distance"])*1.61) + " km)"))
+           print("**\n")
+   elif json_status == 402:
+        print("")
+        print("El codigo de estado.: " + str(json_status) + "; Las Entradas del usuario no son validas para una o ambas ubicaciones.")
+        print("\n")
+   elif json_status == 611:
+        print("")
+        print("El codigo de estado.: " + str(json_status) + "; Se ha verificado una falta de una entrada para una o ambas ubicaciones.")
+        print("\n")
+   else:
+        print("")
+        print("El codigo de estado: " + str(json_status) + "; Referencia a:")
+        print("https://developer.mapquest.com/documentation/directions-api/status-codes%22%22)
+        print("\n")
